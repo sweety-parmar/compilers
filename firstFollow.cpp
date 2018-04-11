@@ -6,52 +6,78 @@ using namespace std;
 string prod[100];
 char nonterm[100];
 int n,x;
+void first(char symbol,int p);
 
 set <char> container[100];
 
 bool notexist(char ch)
 {
-    for(int i=0;i<n;i++)
-    {
-        if(ch==nonterm[i])
-            return false;
-    }
-    return true ;
+	for(int i=0;i<n;i++)
+        {
+		if(ch==nonterm[i])
+	        return false;
+    	}
+    	return true ;
 }
 
-int findindex(char ch)
+
+
+int FI(char ch)
 {
-    for(int i=0;i<x;i++)
-    {
-        if(nonterm[i]==ch)
-            return i;
-    }
+	for(int i=0;i<x;i++)
+	{
+		if(nonterm[i]==ch)
+        	return i;
+    	}
 }
 
-
-void first(char symbol,int k)
+void Union(char symbol , int z,int p,int i)
 {
-for(int i=0;i<n;i++)
-{
-  int z=findindex(symbol);
- if(symbol==prod[i][0])
- {
-     if(islower(prod[i][2]) && prod[i][2]!='e')
-     {
-         container[z].insert(prod[i][2]);
-     }
-     if(set<char>::iterator itr=container[z].find('e') && itr=='e')
-     {
-            first(prod[i][++k],2);
-     }
-     if(isupper(prod[i][k]))
-     {
-         first(prod[i][k],2);
-     }
- }
+	int temp=FI(symbol);
+	for(set <char>::iterator it=container[temp].begin();it!=container[temp].end();++it)
+	{
+		if(*it=='e')
+		{
+			p=p+1;
+			if(prod[i][p]=='\0')
+				container[z].insert('e');
+			else
+			{ 	
+				first(prod[i][p],p);
+				Union(prod[i][p],z,p,i);
+			}
+		}
+		else			
+			container[z].insert(*it);  
+	 }
 }
 
+void first(char symbol,int p)
+{
+
+	for(int i=0;i<n;i++)
+	{
+		int z=FI(symbol);
+		if(islower(symbol))
+			container[z].insert(symbol);
+		else
+		{
+			if(symbol==prod[i][0])
+			{
+     				if(islower(prod[i][2]))
+         				container[z].insert(prod[i][2]);
+				else
+     				{
+					first(prod[i][p],p);
+					Union(prod[i][p],z,p,i);	
+     				}
+	 		}	
+		}
+
+	}
 }
+
+
 
 
 int main()
@@ -72,20 +98,22 @@ for(int i=0;i<n;i++)
         }
 }
 
+
 for(int i=x-1;i>=0;i--)
 {
-    container[i].insert(nonterm[i]);
     first(nonterm[i],2);
 }
+
 
 cout<<"\nFirst are : \n";
 for(int i=0;i<x;i++)
 {
-    for(set <char>::iterator it=container[i].begin();it!=container[i].end();++it)
-    {
-        cout<<" "<<*it;
-    }
-    cout<<"\n";
+	cout<<nonterm[i]<<" : ";
+    	for(set <char>::iterator it=container[i].begin();it!=container[i].end();++it)
+    	{
+        	cout<<" "<<*it;
+    	}
+    	cout<<"\n";
 }
 
 return 0;
