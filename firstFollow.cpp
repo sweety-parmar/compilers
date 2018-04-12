@@ -86,12 +86,10 @@ void first(char symbol,int p)
 void Unionf2(int symbol,int z,int i,int p)
 {
 	int temp=FI(symbol,nonterm);
-
 	for(set <char>::iterator it=Cfollow[temp].begin();it!=Cfollow[temp].end();++it)
 	{
 		Cfollow[z].insert(*it);	
 	}
-
 }
 
 
@@ -122,12 +120,13 @@ void Unionf1(int symbol,int z,int i,int p)
 void follow(char symbol)
 {
 	
-	int x=2,p;
+	int x,p;
 	int z=FI(symbol,nonterm);
 	
 
 		for(int i=0;i<n;i++)
 		{
+			x=2;
 			while(prod[i][x]!='\0')
 			{
 				if(symbol==prod[i][x])
