@@ -4,20 +4,23 @@
 #include<map>
 using namespace std;
 string prod[100];
-char nonterm[100];
-int n,x;
+char nonterm[100],term[100];
+int n,x,TC;
 void first(char symbol,int p);
 void follow(char symbol);
 
+string table[100][100];
 
 set <char> Cfirst[100];
 set <char> Cfollow[100];
 
-bool notexist(char ch)
+
+
+bool notexist(char ch , char arr[])
 {
 	for(int i=0;i<n;i++)
         {
-		if(ch==nonterm[i])
+		if(ch==arr[i])
 	        return false;
     	}
     	return true ;
@@ -25,18 +28,18 @@ bool notexist(char ch)
 
 
 
-int FI(char ch)
+int FI(char ch,char arr[])
 {
 	for(int i=0;i<x;i++)
 	{
-		if(nonterm[i]==ch)
+		if(arr[i]==ch)
         	return i;
     	}
 }
 
 void Funion(char symbol , int z,int p,int i)
 {
-	int temp=FI(symbol);
+	int temp=FI(symbol,nonterm);
 	for(set <char>::iterator it=Cfirst[temp].begin();it!=Cfirst[temp].end();++it)
 	{
 		if(*it=='e')
@@ -57,7 +60,7 @@ void Funion(char symbol , int z,int p,int i)
 
 void first(char symbol,int p)
 {
-	int z=FI(symbol);
+	int z=FI(symbol,nonterm);
 
 	if(!isupper(symbol))
 		Cfirst[z].insert(symbol);
@@ -82,7 +85,7 @@ void first(char symbol,int p)
 
 void Unionf2(int symbol,int z,int i,int p)
 {
-	int temp=FI(symbol);
+	int temp=FI(symbol,nonterm);
 
 	for(set <char>::iterator it=Cfollow[temp].begin();it!=Cfollow[temp].end();++it)
 	{
@@ -94,7 +97,7 @@ void Unionf2(int symbol,int z,int i,int p)
 
 void Unionf1(int symbol,int z,int i,int p)
 {
-	int temp=FI(symbol);
+	int temp=FI(symbol,nonterm);
 	for(set <char>::iterator it=Cfirst[temp].begin();it!=Cfirst[temp].end();++it)
 	{
 		if(*it=='e')
@@ -113,9 +116,6 @@ void Unionf1(int symbol,int z,int i,int p)
 		}
 		else
 			Cfollow[z].insert(*it);	
-		
-		
-	
 	}
 }
 
@@ -123,7 +123,8 @@ void follow(char symbol)
 {
 	
 	int x=2,p;
-	int z=FI(symbol);
+	int z=FI(symbol,nonterm);
+	
 
 		for(int i=0;i<n;i++)
 		{
@@ -132,7 +133,7 @@ void follow(char symbol)
 				if(symbol==prod[i][x])
 				{
 					p=x+1;
-					if(prod[i][x]=='\0')
+					if(prod[i][p]=='\0' && prod[i][x]!=prod[i][0])
 					{
 						follow(prod[i][0]);
 						Unionf2(prod[i][0],z,i,p);
@@ -142,7 +143,7 @@ void follow(char symbol)
 						Cfollow[z].insert(prod[i][p]);	
 					}
 						
-					else
+					if(isupper(prod[i][p]) && prod[i][p]!='\0')
 					{
 						//first(prod[i][p],p);
 						Unionf1(prod[i][p],z,i,p);
@@ -151,6 +152,7 @@ void follow(char symbol)
 				++x;
 			}
 		}
+
 }
 
 int main()
@@ -164,10 +166,20 @@ for(int i=0;i<n;i++)
 x=0;
 for(int i=0;i<n;i++)
 {
-        if(notexist(prod[i][0]))
+        if(notexist(prod[i][0],nonterm))
         {
             nonterm[x]=prod[i][0];
             x++;
+        }
+}
+
+
+for(int i=0;i<n;i++)
+{
+        if(notexist(prod[i][0],term))
+        {
+            term[TC]=prod[i][0];
+            TC++;
         }
 }
 
@@ -206,6 +218,20 @@ for(int i=0;i<x;i++)
     	}
     	cout<<"\n";
 }
+
+
+int row,col;
+for(int i=0;i<n;i++)
+{
+  if(islower(prod[i][2]))
+  {
+        row=FI(prod[i][0],term);
+        col=FI(prod[i][2],term);
+      
+  }
+       
+}
+
 
 return 0;
 }
